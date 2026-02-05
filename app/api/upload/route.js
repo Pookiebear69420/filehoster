@@ -1,4 +1,4 @@
-import { handleUpload } from '@vercel/blob/client';
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {
@@ -8,29 +8,44 @@ export async function POST(request) {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (pathname, clientPayload) => {
-        // Here you can add custom validation logic
-        // For example, check authentication, file size limits, etc.
-        
+      onBeforeGenerateToken: async (pathname) => {
+        // You can implement authentication and validation logic here
+        // For example, check if the user is authenticated
+        // const session = await getSession();
+        // if (!session) throw new Error('Unauthorized');
+
         return {
-          allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf', 'video/mp4', 'video/quicktime', 'application/zip', 'application/x-zip-compressed', 'text/plain', 'text/csv', 'application/json', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-          tokenPayload: JSON.stringify({
-            uploadedAt: new Date().toISOString(),
-          }),
+          allowedContentTypes: [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+            'application/pdf',
+            'video/mp4',
+            'video/quicktime',
+            'application/zip',
+            'application/x-zip-compressed',
+            'text/plain',
+            'text/csv',
+            'application/json',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/octet-stream',
+          ],
         };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // Optional: Add post-upload logic here
-        console.log('Upload completed:', blob.pathname);
+        console.log('Upload completed successfully:', blob.pathname);
       },
     });
 
     return NextResponse.json(jsonResponse);
   } catch (error) {
-    console.error('Upload handler error:', error);
+    console.error('Error in upload handler:', error);
     return NextResponse.json(
-      { error: error.message || 'Upload failed' },
+      { error: error.message },
       { status: 400 }
     );
   }
 }
+
