@@ -18,13 +18,13 @@ export default function Home() {
     try {
       const blob = await upload(file.name, file, {
         access: 'public',
-        maximumSize: 500 * 1024 * 1024, // 500MB
+        maximumSize: 500 * 1024 * 1024,
       });
 
       setUrl(blob.url);
     } catch (err) {
-      alert('Upload failed');
       console.error(err);
+      alert('Upload failed');
     }
 
     setLoading(false);
