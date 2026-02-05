@@ -3,7 +3,6 @@
 export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
-import { upload } from '@vercel/blob/client';
 
 export default function Home() {
   const [file, setFile] = useState(null);
@@ -16,6 +15,8 @@ export default function Home() {
     setLoading(true);
 
     try {
+      const { upload } = await import('@vercel/blob/client');
+
       const blob = await upload(file.name, file, {
         access: 'public',
         maximumSize: 500 * 1024 * 1024,
