@@ -1,70 +1,30 @@
-'use client';
+async function upload() {
+  if (!file) return;
 
-import { useState } from 'react';
+  setLoading(true);
 
-export default function Home() {
-  const [file, setFile] = useState(null);
-  const [url, setUrl] = useState('');
-  const [loading, setLoading] = useState(false);
+  // 1) Get signed upload URL
+  const res = await fetch('/api/blob', { method: 'POST' });
+  const { url } = await res.json();
 
-  async function upload() {
-    if (!file) return;
+  // 2) Upload directly to Blob
+  const uploadRes = await fetch(url, {
+    method: 'PUT',
+    body: file,
+    headers: {
+      'Content-Type': file.type,
+    },
+  });
 
-    setLoading(true);
-    const form = new FormData();
-    form.append('file', file);
-
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: form,
-    });
-
-    const data = await res.json();
-    setUrl(data.url);
+  if (!uploadRes.ok) {
+    alert('Upload failed');
     setLoading(false);
+    return;
   }
 
-  return (
-    <main style={{
-      minHeight: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}>
-      <div style={{
-        border: '1px solid #333',
-        padding: 20,
-        borderRadius: 12,
-        width: 350
-      }}>
-        <h2>Simple File Host</h2>
+  // 3) FINAL FILE URL (strip query params)
+  const cleanUrl = url.split('?')[0];
+  setUrl(cleanUrl);
 
-        <input
-          type="file"
-          onChange={(e) => setFile(e.target.files[0])}
-          style={{ marginBottom: 12 }}
-        />
-
-        <button
-          onClick={upload}
-          disabled={!file || loading}
-          style={{
-            width: '100%',
-            padding: 10,
-            background: 'white',
-            color: 'black',
-            borderRadius: 8
-          }}
-        >
-          {loading ? 'Uploading…' : 'Upload'}
-        </button>
-
-        {url && (
-          <p style={{ marginTop: 10, wordBreak: 'break-all' }}>
-            <a href={url} style={{ color: '#4ea1ff' }}>{url}</a>
-          </p>
-        )}
-      </div>
-    </main>
-  );
+  setLoading(false);
 }
