@@ -27,15 +27,12 @@ export default function Home() {
     try {
       const { upload } = await import('@vercel/blob/client');
       
-      const blob = await upload(file.name, file, {
+      const newBlob = await upload(file.name, file, {
         access: 'public',
         handleUploadUrl: '/api/upload',
-        onUploadProgress: ({ percentage }) => {
-          setUploadProgress(percentage);
-        },
       });
 
-      setUrl(blob.url);
+      setUrl(newBlob.url);
       setUploadProgress(100);
     } catch (err) {
       console.error('Upload error:', err);
