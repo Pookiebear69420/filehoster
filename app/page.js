@@ -1,3 +1,4 @@
+import { upload } from '@vercel/blob/client';
 export const dynamic = 'force-dynamic';
 async function upload() {
   if (!file) return;
