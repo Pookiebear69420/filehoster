@@ -17,10 +17,10 @@ export default function Home() {
     try {
       const { upload } = await import('@vercel/blob/client');
 
-      const blob = await upload(file.name, file, {
-        access: 'public',
-        maximumSize: 500 * 1024 * 1024,
-      });
+    const blob = await upload(file.name, file, {
+      access: 'public',
+      handleUploadUrl: '/api/upload', // 👈 REQUIRED
+    });
 
       setUrl(blob.url);
     } catch (err) {
